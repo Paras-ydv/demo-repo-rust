@@ -1,5 +1,5 @@
 #!/bin/bash
-# auto-commit: 1778452479933
-echo "Running build..."
-npm install && npm run build
-echo "Done"
+# auto-commit: 1778452554200
+echo "Running security scan..."
+npm audit
+echo "Scan complete"
