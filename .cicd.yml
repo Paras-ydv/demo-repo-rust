@@ -1,0 +1,48 @@
+# .cicd.yml - PipelineHub CI/CD Configuration Template
+# Copy this file to your repository root and customize for your project
+
+name: my-pipeline
+language: rust  # Options: node, python, java, general
+environment: staging  # Options: production, staging, development
+
+# Pipeline stages to execute (customize as needed)
+stages:
+  - checkout
+  - install
+  - build
+  - test
+  - security_scan
+  - package
+  - deploy
+  - notify
+
+# Environment variables available during pipeline execution
+variables:
+  BUILD_ENV: production
+  LOG_LEVEL: info
+
+# Custom scripts per stage (optional)
+# If not specified, PipelineHub will use default commands based on language
+scripts:
+  install:
+    - echo "Installing dependencies..."
+    # Add your install commands here
+  build:
+    - echo "Building project..."
+    # Add your build commands here
+  test:
+    - echo "Running tests..."
+    # Add your test commands here
+  security_scan:
+    - echo "Running security scans..."
+    # Add your security scan commands here
+  package:
+    - echo "Packaging application..."
+    # Add your packaging commands here
+  deploy:
+    - echo "Deploying to $BUILD_ENV..."
+    # Add your deployment commands here
+
+# Additional configuration
+timeout: 3600  # Maximum pipeline duration in seconds (default: 1 hour)
+retry: 3       # Number of retry attempts on failure (default: 3)
