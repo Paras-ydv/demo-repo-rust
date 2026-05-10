@@ -1,24 +1,23 @@
-use axum::{Json, extract::Path};
+use actix_web::{web, HttpResponse, Result};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
-pub struct ValidatorInput {
-    pub data: String,
+pub struct ValidatorRequest {
+    pub name: String,
+    pub value: String,
 }
 
 #[derive(Debug, Serialize)]
-pub struct ValidatorOutput {
-    pub result: String,
-    pub timestamp: i64,
+pub struct ValidatorResponse {
+    pub success: bool,
+    pub message: String,
 }
 
-pub async fn validator_handler(
-    Path(id): Path<String>,
-    Json(input): Json<ValidatorInput>,
-) -> Json<ValidatorOutput> {
-    Json(ValidatorOutput {
-        result: format!("Processed {} with {}", id, input.data),
-        timestamp: chrono::Utc::now().timestamp(),
-    })
+pub async fn handle_validator(req: web::Json<ValidatorRequest>) -> Result<HttpResponse> {
+    let response = ValidatorResponse {
+        success: true,
+        message: format!("Processed: {}", req.name),
+    };
+    Ok(HttpResponse::Ok().json(response))
 }
-// auto-commit: 1778455436562
+// auto-commit: 1778455757769
