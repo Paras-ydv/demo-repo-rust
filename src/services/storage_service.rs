@@ -1,28 +1,28 @@
-use tokio::sync::RwLock;
-use std::sync::Arc;
+use serde::{Deserialize, Serialize};
+use std::error::Error;
 
+#[derive(Debug, Serialize, Deserialize)]
 pub struct StorageService {
-    data: Arc<RwLock<Vec<String>>>,
+    base_url: String,
+    timeout: u64,
 }
 
 impl StorageService {
-    pub fn new() -> Self {
+    pub fn new(base_url: String) -> Self {
         Self {
-            data: Arc::new(RwLock::new(Vec::new())),
+            base_url,
+            timeout: 30,
         }
     }
 
-    pub async fn add(&self, item: String) {
-        let mut data = self.data.write().await;
-        data.push(item);
+    pub async fn fetch(&self, endpoint: &str) -> Result<String, Box<dyn Error>> {
+        let url = format!("{}/{}", self.base_url, endpoint);
+        let response = reqwest::get(&url).await?;
+        Ok(response.text().await?)
     }
 
-    pub async fn get_all(&self) -> Vec<String> {
-        self.data.read().await.clone()
-    }
-
-    pub async fn clear(&self) {
-        self.data.write().await.clear();
+    pub fn set_timeout(&mut self, timeout: u64) {
+        self.timeout = timeout;
     }
 }
-// auto-commit: 1778455434076
+// auto-commit: 1778586786898
