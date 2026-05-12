@@ -1,24 +1,23 @@
-use axum::{Json, extract::Path};
+use actix_web::{web, HttpResponse, Result};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
-pub struct SchedulerInput {
-    pub data: String,
+pub struct SchedulerRequest {
+    pub name: String,
+    pub value: String,
 }
 
 #[derive(Debug, Serialize)]
-pub struct SchedulerOutput {
-    pub result: String,
-    pub timestamp: i64,
+pub struct SchedulerResponse {
+    pub success: bool,
+    pub message: String,
 }
 
-pub async fn scheduler_handler(
-    Path(id): Path<String>,
-    Json(input): Json<SchedulerInput>,
-) -> Json<SchedulerOutput> {
-    Json(SchedulerOutput {
-        result: format!("Processed {} with {}", id, input.data),
-        timestamp: chrono::Utc::now().timestamp(),
-    })
+pub async fn handle_scheduler(req: web::Json<SchedulerRequest>) -> Result<HttpResponse> {
+    let response = SchedulerResponse {
+        success: true,
+        message: format!("Processed: {}", req.name),
+    };
+    Ok(HttpResponse::Ok().json(response))
 }
-// auto-commit: 1778586762948
+// auto-commit: 1778586772905
