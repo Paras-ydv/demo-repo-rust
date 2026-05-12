@@ -1,30 +1,30 @@
-use serde::{Deserialize, Serialize};
-use chrono::{DateTime, Utc};
+use std::fmt;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct Order {
-    pub id: String,
-    pub name: String,
-    pub email: String,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub code: String,
+    pub message: String,
+    pub details: Option<String>,
 }
 
 impl Order {
-    pub fn new(name: String, email: String) -> Self {
-        let now = Utc::now();
+    pub fn new(code: String, message: String) -> Self {
         Self {
-            id: uuid::Uuid::new_v4().to_string(),
-            name,
-            email,
-            created_at: now,
-            updated_at: now,
+            code,
+            message,
+            details: None,
         }
     }
 
-    pub fn update_name(&mut self, name: String) {
-        self.name = name;
-        self.updated_at = Utc::now();
+    pub fn with_details(mut self, details: String) -> Self {
+        self.details = Some(details);
+        self
     }
 }
-// auto-commit: 1778455028273
+
+impl fmt::Display for Order {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "[{}] {}", self.code, self.message)
+    }
+}
+// auto-commit: 1778586798879
