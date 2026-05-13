@@ -1,28 +1,30 @@
-use serde::{Deserialize, Serialize};
+use std::fmt;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub enum NotificationStatus {
-    Active,
-    Inactive,
-    Pending,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct Notification {
-    pub id: u64,
-    pub title: String,
-    pub description: Option<String>,
-    pub status: NotificationStatus,
-    pub priority: u8,
+    pub code: String,
+    pub message: String,
+    pub details: Option<String>,
 }
 
 impl Notification {
-    pub fn is_active(&self) -> bool {
-        self.status == NotificationStatus::Active
+    pub fn new(code: String, message: String) -> Self {
+        Self {
+            code,
+            message,
+            details: None,
+        }
     }
 
-    pub fn set_priority(&mut self, priority: u8) {
-        self.priority = priority.min(10);
+    pub fn with_details(mut self, details: String) -> Self {
+        self.details = Some(details);
+        self
     }
 }
-// auto-commit: 1778711411629
+
+impl fmt::Display for Notification {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "[{}] {}", self.code, self.message)
+    }
+}
+// auto-commit: 1778711413407
