@@ -1,28 +1,28 @@
-use serde::{Deserialize, Serialize};
-use std::error::Error;
+use tokio::sync::RwLock;
+use std::sync::Arc;
 
-#[derive(Debug, Serialize, Deserialize)]
 pub struct ParserService {
-    base_url: String,
-    timeout: u64,
+    data: Arc<RwLock<Vec<String>>>,
 }
 
 impl ParserService {
-    pub fn new(base_url: String) -> Self {
+    pub fn new() -> Self {
         Self {
-            base_url,
-            timeout: 30,
+            data: Arc::new(RwLock::new(Vec::new())),
         }
     }
 
-    pub async fn fetch(&self, endpoint: &str) -> Result<String, Box<dyn Error>> {
-        let url = format!("{}/{}", self.base_url, endpoint);
-        let response = reqwest::get(&url).await?;
-        Ok(response.text().await?)
+    pub async fn add(&self, item: String) {
+        let mut data = self.data.write().await;
+        data.push(item);
     }
 
-    pub fn set_timeout(&mut self, timeout: u64) {
-        self.timeout = timeout;
+    pub async fn get_all(&self) -> Vec<String> {
+        self.data.read().await.clone()
+    }
+
+    pub async fn clear(&self) {
+        self.data.write().await.clear();
     }
 }
-// auto-commit: 1778455024145
+// auto-commit: 1778711391917
