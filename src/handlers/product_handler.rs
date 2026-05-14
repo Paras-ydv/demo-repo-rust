@@ -1,24 +1,23 @@
-use axum::{Json, extract::Path};
+use actix_web::{web, HttpResponse, Result};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
-pub struct ProductInput {
-    pub data: String,
+pub struct ProductRequest {
+    pub name: String,
+    pub value: String,
 }
 
 #[derive(Debug, Serialize)]
-pub struct ProductOutput {
-    pub result: String,
-    pub timestamp: i64,
+pub struct ProductResponse {
+    pub success: bool,
+    pub message: String,
 }
 
-pub async fn product_handler(
-    Path(id): Path<String>,
-    Json(input): Json<ProductInput>,
-) -> Json<ProductOutput> {
-    Json(ProductOutput {
-        result: format!("Processed {} with {}", id, input.data),
-        timestamp: chrono::Utc::now().timestamp(),
-    })
+pub async fn handle_product(req: web::Json<ProductRequest>) -> Result<HttpResponse> {
+    let response = ProductResponse {
+        success: true,
+        message: format!("Processed: {}", req.name),
+    };
+    Ok(HttpResponse::Ok().json(response))
 }
-// auto-commit: 1778732339428
+// auto-commit: 1778737097606
