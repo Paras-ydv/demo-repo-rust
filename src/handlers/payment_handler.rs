@@ -1,23 +1,24 @@
-use actix_web::{web, HttpResponse, Result};
+use axum::{Json, extract::Path};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
-pub struct PaymentRequest {
-    pub name: String,
-    pub value: String,
+pub struct PaymentInput {
+    pub data: String,
 }
 
 #[derive(Debug, Serialize)]
-pub struct PaymentResponse {
-    pub success: bool,
-    pub message: String,
+pub struct PaymentOutput {
+    pub result: String,
+    pub timestamp: i64,
 }
 
-pub async fn handle_payment(req: web::Json<PaymentRequest>) -> Result<HttpResponse> {
-    let response = PaymentResponse {
-        success: true,
-        message: format!("Processed: {}", req.name),
-    };
-    Ok(HttpResponse::Ok().json(response))
+pub async fn payment_handler(
+    Path(id): Path<String>,
+    Json(input): Json<PaymentInput>,
+) -> Json<PaymentOutput> {
+    Json(PaymentOutput {
+        result: format!("Processed {} with {}", id, input.data),
+        timestamp: chrono::Utc::now().timestamp(),
+    })
 }
-// auto-commit: 1778455021614
+// auto-commit: 1778741426624
