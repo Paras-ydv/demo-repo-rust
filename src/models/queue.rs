@@ -1,30 +1,28 @@
 use serde::{Deserialize, Serialize};
-use chrono::{DateTime, Utc};
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum QueueStatus {
+    Active,
+    Inactive,
+    Pending,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Queue {
-    pub id: String,
-    pub name: String,
-    pub email: String,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub id: u64,
+    pub title: String,
+    pub description: Option<String>,
+    pub status: QueueStatus,
+    pub priority: u8,
 }
 
 impl Queue {
-    pub fn new(name: String, email: String) -> Self {
-        let now = Utc::now();
-        Self {
-            id: uuid::Uuid::new_v4().to_string(),
-            name,
-            email,
-            created_at: now,
-            updated_at: now,
-        }
+    pub fn is_active(&self) -> bool {
+        self.status == QueueStatus::Active
     }
 
-    pub fn update_name(&mut self, name: String) {
-        self.name = name;
-        self.updated_at = Utc::now();
+    pub fn set_priority(&mut self, priority: u8) {
+        self.priority = priority.min(10);
     }
 }
-// auto-commit: 1778455754328
+// auto-commit: 1778735667166
