@@ -1,28 +1,30 @@
 use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub enum AuthStatus {
-    Active,
-    Inactive,
-    Pending,
-}
+use chrono::{DateTime, Utc};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Auth {
-    pub id: u64,
-    pub title: String,
-    pub description: Option<String>,
-    pub status: AuthStatus,
-    pub priority: u8,
+    pub id: String,
+    pub name: String,
+    pub email: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 impl Auth {
-    pub fn is_active(&self) -> bool {
-        self.status == AuthStatus::Active
+    pub fn new(name: String, email: String) -> Self {
+        let now = Utc::now();
+        Self {
+            id: uuid::Uuid::new_v4().to_string(),
+            name,
+            email,
+            created_at: now,
+            updated_at: now,
+        }
     }
 
-    pub fn set_priority(&mut self, priority: u8) {
-        self.priority = priority.min(10);
+    pub fn update_name(&mut self, name: String) {
+        self.name = name;
+        self.updated_at = Utc::now();
     }
 }
-// auto-commit: 1778586788843
+// auto-commit: 1778730264229
