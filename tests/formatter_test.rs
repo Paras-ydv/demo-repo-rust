@@ -1,26 +1,22 @@
 #[cfg(test)]
-mod tests {
+mod formatter_tests {
     use super::*;
 
-    #[test]
-    fn test_formatter_creation() {
+    #[tokio::test]
+    async fn test_formatter_async() {
         let service = FormatterService::new();
-        assert!(service.get("key").is_none());
+        service.add("item1".to_string()).await;
+        service.add("item2".to_string()).await;
+        let items = service.get_all().await;
+        assert_eq!(items.len(), 2);
     }
 
-    #[test]
-    fn test_formatter_set_and_get() {
+    #[tokio::test]
+    async fn test_formatter_clear() {
         let service = FormatterService::new();
-        service.set("key".to_string(), "value".to_string());
-        assert_eq!(service.get("key"), Some("value".to_string()));
-    }
-
-    #[test]
-    fn test_formatter_remove() {
-        let service = FormatterService::new();
-        service.set("key".to_string(), "value".to_string());
-        assert!(service.remove("key").is_some());
-        assert!(service.get("key").is_none());
+        service.add("item".to_string()).await;
+        service.clear().await;
+        assert!(service.get_all().await.is_empty());
     }
 }
-// auto-commit: 1778586774985
+// auto-commit: 1778737105071
