@@ -1,27 +1,28 @@
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use serde::{Deserialize, Serialize};
+use std::error::Error;
 
+#[derive(Debug, Serialize, Deserialize)]
 pub struct DatabaseService {
-    cache: Arc<Mutex<HashMap<String, String>>>,
+    base_url: String,
+    timeout: u64,
 }
 
 impl DatabaseService {
-    pub fn new() -> Self {
+    pub fn new(base_url: String) -> Self {
         Self {
-            cache: Arc::new(Mutex::new(HashMap::new())),
+            base_url,
+            timeout: 30,
         }
     }
 
-    pub fn get(&self, key: &str) -> Option<String> {
-        self.cache.lock().unwrap().get(key).cloned()
+    pub async fn fetch(&self, endpoint: &str) -> Result<String, Box<dyn Error>> {
+        let url = format!("{}/{}", self.base_url, endpoint);
+        let response = reqwest::get(&url).await?;
+        Ok(response.text().await?)
     }
 
-    pub fn set(&self, key: String, value: String) {
-        self.cache.lock().unwrap().insert(key, value);
-    }
-
-    pub fn remove(&self, key: &str) -> Option<String> {
-        self.cache.lock().unwrap().remove(key)
+    pub fn set_timeout(&mut self, timeout: u64) {
+        self.timeout = timeout;
     }
 }
-// auto-commit: 1778454024817
+// auto-commit: 1778731805878
