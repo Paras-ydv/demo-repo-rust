@@ -3,7 +3,7 @@
 
 name: my-pipeline
 language: rust  # Options: node, python, java, general
-environment: staging  # Options: production, staging, development
+environment: production  # Options: production, staging, development
 
 # Pipeline stages to execute (customize as needed)
 stages:
