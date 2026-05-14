@@ -1,27 +1,28 @@
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use tokio::sync::RwLock;
+use std::sync::Arc;
 
 pub struct DatabaseService {
-    cache: Arc<Mutex<HashMap<String, String>>>,
+    data: Arc<RwLock<Vec<String>>>,
 }
 
 impl DatabaseService {
     pub fn new() -> Self {
         Self {
-            cache: Arc::new(Mutex::new(HashMap::new())),
+            data: Arc::new(RwLock::new(Vec::new())),
         }
     }
 
-    pub fn get(&self, key: &str) -> Option<String> {
-        self.cache.lock().unwrap().get(key).cloned()
+    pub async fn add(&self, item: String) {
+        let mut data = self.data.write().await;
+        data.push(item);
     }
 
-    pub fn set(&self, key: String, value: String) {
-        self.cache.lock().unwrap().insert(key, value);
+    pub async fn get_all(&self) -> Vec<String> {
+        self.data.read().await.clone()
     }
 
-    pub fn remove(&self, key: &str) -> Option<String> {
-        self.cache.lock().unwrap().remove(key)
+    pub async fn clear(&self) {
+        self.data.write().await.clear();
     }
 }
-// auto-commit: 1778454024817
+// auto-commit: 1778737101349
