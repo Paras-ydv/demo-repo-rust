@@ -1,28 +1,27 @@
-use tokio::sync::RwLock;
-use std::sync::Arc;
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
 pub struct FormatterService {
-    data: Arc<RwLock<Vec<String>>>,
+    cache: Arc<Mutex<HashMap<String, String>>>,
 }
 
 impl FormatterService {
     pub fn new() -> Self {
         Self {
-            data: Arc::new(RwLock::new(Vec::new())),
+            cache: Arc::new(Mutex::new(HashMap::new())),
         }
     }
 
-    pub async fn add(&self, item: String) {
-        let mut data = self.data.write().await;
-        data.push(item);
+    pub fn get(&self, key: &str) -> Option<String> {
+        self.cache.lock().unwrap().get(key).cloned()
     }
 
-    pub async fn get_all(&self) -> Vec<String> {
-        self.data.read().await.clone()
+    pub fn set(&self, key: String, value: String) {
+        self.cache.lock().unwrap().insert(key, value);
     }
 
-    pub async fn clear(&self) {
-        self.data.write().await.clear();
+    pub fn remove(&self, key: &str) -> Option<String> {
+        self.cache.lock().unwrap().remove(key)
     }
 }
-// auto-commit: 1778734490985
+// auto-commit: 1778735335143
