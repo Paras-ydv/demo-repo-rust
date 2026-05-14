@@ -1,17 +1,29 @@
-use sha2::{Sha256, Digest};
-use base64::{Engine as _, engine::general_purpose};
+use std::collections::HashMap;
 
-pub fn hash_string(input: &str) -> String {
-    let mut hasher = Sha256::new();
-    hasher.update(input.as_bytes());
-    format!("{:x}", hasher.finalize())
+pub struct QueueCache<T> {
+    data: HashMap<String, T>,
+    max_size: usize,
 }
 
-pub fn encode_base64(data: &[u8]) -> String {
-    general_purpose::STANDARD.encode(data)
-}
+impl<T> QueueCache<T> {
+    pub fn new(max_size: usize) -> Self {
+        Self {
+            data: HashMap::new(),
+            max_size,
+        }
+    }
 
-pub fn decode_base64(encoded: &str) -> Result<Vec<u8>, base64::DecodeError> {
-    general_purpose::STANDARD.decode(encoded)
+    pub fn insert(&mut self, key: String, value: T) {
+        if self.data.len() >= self.max_size {
+            if let Some(first_key) = self.data.keys().next().cloned() {
+                self.data.remove(&first_key);
+            }
+        }
+        self.data.insert(key, value);
+    }
+
+    pub fn get(&self, key: &str) -> Option<&T> {
+        self.data.get(key)
+    }
 }
-// auto-commit: 1778711388179
+// auto-commit: 1778735080195
