@@ -1,30 +1,30 @@
-use std::fmt;
+use serde::{Deserialize, Serialize};
+use chrono::{DateTime, Utc};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Parser {
-    pub code: String,
-    pub message: String,
-    pub details: Option<String>,
+    pub id: String,
+    pub name: String,
+    pub email: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 impl Parser {
-    pub fn new(code: String, message: String) -> Self {
+    pub fn new(name: String, email: String) -> Self {
+        let now = Utc::now();
         Self {
-            code,
-            message,
-            details: None,
+            id: uuid::Uuid::new_v4().to_string(),
+            name,
+            email,
+            created_at: now,
+            updated_at: now,
         }
     }
 
-    pub fn with_details(mut self, details: String) -> Self {
-        self.details = Some(details);
-        self
+    pub fn update_name(&mut self, name: String) {
+        self.name = name;
+        self.updated_at = Utc::now();
     }
 }
-
-impl fmt::Display for Parser {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "[{}] {}", self.code, self.message)
-    }
-}
-// auto-commit: 1778455440024
+// auto-commit: 1778737099460
