@@ -1,30 +1,28 @@
-use std::fmt;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum CacheStatus {
+    Active,
+    Inactive,
+    Pending,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Cache {
-    pub code: String,
-    pub message: String,
-    pub details: Option<String>,
+    pub id: u64,
+    pub title: String,
+    pub description: Option<String>,
+    pub status: CacheStatus,
+    pub priority: u8,
 }
 
 impl Cache {
-    pub fn new(code: String, message: String) -> Self {
-        Self {
-            code,
-            message,
-            details: None,
-        }
+    pub fn is_active(&self) -> bool {
+        self.status == CacheStatus::Active
     }
 
-    pub fn with_details(mut self, details: String) -> Self {
-        self.details = Some(details);
-        self
+    pub fn set_priority(&mut self, priority: u8) {
+        self.priority = priority.min(10);
     }
 }
-
-impl fmt::Display for Cache {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "[{}] {}", self.code, self.message)
-    }
-}
-// auto-commit: 1778586802754
+// auto-commit: 1778741370550
