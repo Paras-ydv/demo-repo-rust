@@ -1,30 +1,28 @@
 use serde::{Deserialize, Serialize};
-use chrono::{DateTime, Utc};
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum OrderStatus {
+    Active,
+    Inactive,
+    Pending,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Order {
-    pub id: String,
-    pub name: String,
-    pub email: String,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub id: u64,
+    pub title: String,
+    pub description: Option<String>,
+    pub status: OrderStatus,
+    pub priority: u8,
 }
 
 impl Order {
-    pub fn new(name: String, email: String) -> Self {
-        let now = Utc::now();
-        Self {
-            id: uuid::Uuid::new_v4().to_string(),
-            name,
-            email,
-            created_at: now,
-            updated_at: now,
-        }
+    pub fn is_active(&self) -> bool {
+        self.status == OrderStatus::Active
     }
 
-    pub fn update_name(&mut self, name: String) {
-        self.name = name;
-        self.updated_at = Utc::now();
+    pub fn set_priority(&mut self, priority: u8) {
+        self.priority = priority.min(10);
     }
 }
-// auto-commit: 1778455028273
+// auto-commit: 1778735329612
