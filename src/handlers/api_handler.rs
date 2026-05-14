@@ -1,24 +1,23 @@
-use axum::{Json, extract::Path};
+use actix_web::{web, HttpResponse, Result};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
-pub struct ApiInput {
-    pub data: String,
+pub struct ApiRequest {
+    pub name: String,
+    pub value: String,
 }
 
 #[derive(Debug, Serialize)]
-pub struct ApiOutput {
-    pub result: String,
-    pub timestamp: i64,
+pub struct ApiResponse {
+    pub success: bool,
+    pub message: String,
 }
 
-pub async fn api_handler(
-    Path(id): Path<String>,
-    Json(input): Json<ApiInput>,
-) -> Json<ApiOutput> {
-    Json(ApiOutput {
-        result: format!("Processed {} with {}", id, input.data),
-        timestamp: chrono::Utc::now().timestamp(),
-    })
+pub async fn handle_api(req: web::Json<ApiRequest>) -> Result<HttpResponse> {
+    let response = ApiResponse {
+        success: true,
+        message: format!("Processed: {}", req.name),
+    };
+    Ok(HttpResponse::Ok().json(response))
 }
-// auto-commit: 1778736000058
+// auto-commit: 1778737928811
