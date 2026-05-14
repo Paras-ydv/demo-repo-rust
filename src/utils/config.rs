@@ -1,24 +1,29 @@
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::collections::HashMap;
 
-pub fn get_timestamp() -> u64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs()
+pub struct ConfigCache<T> {
+    data: HashMap<String, T>,
+    max_size: usize,
 }
 
-pub fn format_duration(seconds: u64) -> String {
-    let hours = seconds / 3600;
-    let minutes = (seconds % 3600) / 60;
-    let secs = seconds % 60;
-    format!("{}h {}m {}s", hours, minutes, secs)
-}
+impl<T> ConfigCache<T> {
+    pub fn new(max_size: usize) -> Self {
+        Self {
+            data: HashMap::new(),
+            max_size,
+        }
+    }
 
-pub fn truncate_string(s: &str, max_len: usize) -> String {
-    if s.len() <= max_len {
-        s.to_string()
-    } else {
-        format!("{}...", &s[..max_len])
+    pub fn insert(&mut self, key: String, value: T) {
+        if self.data.len() >= self.max_size {
+            if let Some(first_key) = self.data.keys().next().cloned() {
+                self.data.remove(&first_key);
+            }
+        }
+        self.data.insert(key, value);
+    }
+
+    pub fn get(&self, key: &str) -> Option<&T> {
+        self.data.get(key)
     }
 }
-// auto-commit: 1778736418162
+// auto-commit: 1778737417304
